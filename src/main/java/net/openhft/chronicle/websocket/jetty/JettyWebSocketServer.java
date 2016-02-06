@@ -7,17 +7,15 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 /**
  * Created by peter.lawrey on 04/02/2016.
  */
 public class JettyWebSocketServer {
-    static final Logger LOGGER = LoggerFactory.getLogger(JettyWebSocketServer.class);
     private final Server server;
     private final ServletContextHandler context;
 
@@ -35,9 +33,9 @@ public class JettyWebSocketServer {
 
     }
 
-    public void addServlet(String path, BiConsumer<WireIn, MarshallableOut> channel) {
+    public <T> void addServlet(String path, Function<MarshallableOut, T> outWrapper, BiConsumer<WireIn, T> channel) {
         // Add a websocket to a specific path spec
-        ServletHolder holderEvents = new ServletHolder("ws-events", new JettyServletFactory(channel));
+        ServletHolder holderEvents = new ServletHolder("ws-events", new JettyServletFactory<T>(outWrapper, channel));
         context.addServlet(holderEvents, path);
     }
 

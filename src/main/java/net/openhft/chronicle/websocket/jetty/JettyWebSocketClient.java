@@ -1,9 +1,7 @@
 package net.openhft.chronicle.websocket.jetty;
 
 import net.openhft.chronicle.core.io.Closeable;
-import net.openhft.chronicle.wire.MarshallableOut;
-import net.openhft.chronicle.wire.ValueOut;
-import net.openhft.chronicle.wire.WireIn;
+import net.openhft.chronicle.wire.*;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.slf4j.Logger;
@@ -21,7 +19,7 @@ public class JettyWebSocketClient implements MarshallableOut, Closeable {
     private static final Logger LOGGER = LoggerFactory.getLogger(JettyWebSocketClient.class);
 
     private final WebSocketClient client;
-    private final JettyWebSocketAdapter adapter;
+    private final JettyWebSocketAdapter<MarshallableOut> adapter;
 
     public JettyWebSocketClient(String uriString, BiConsumer<WireIn, MarshallableOut> parser) throws IOException {
         URI uri = URI.create(uriString);
@@ -31,7 +29,7 @@ public class JettyWebSocketClient implements MarshallableOut, Closeable {
         try {
             client.start();
             // The socket that receives events
-            adapter = new JettyWebSocketAdapter(parser);
+            adapter = new JettyWebSocketAdapter<>(out -> out, parser);
             // Attempt Connect
             Future<Session> fut = client.connect(adapter, uri);
             // Wait for Connect
@@ -40,6 +38,11 @@ public class JettyWebSocketClient implements MarshallableOut, Closeable {
         } catch (Exception e) {
             throw new IOException(e);
         }
+    }
+
+    @Override
+    public void send(WireKey key, WriteValue value) {
+        adapter.send(key, value);
     }
 
     @Override

@@ -14,7 +14,7 @@ public class JettyWebSocketEchoServer implements BiConsumer<WireIn, Marshallable
 
     public JettyWebSocketEchoServer(int port) {
         this.server = new JettyWebSocketServer(port);
-        server.addServlet("/echo/*", this);
+        server.addServlet("/echo/*", out -> out, this);
         server.start();
     }
 

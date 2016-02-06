@@ -1,8 +1,10 @@
 package net.openhft.chronicle.websocket.jetty;
 
+import net.openhft.chronicle.wire.MarshallableOut;
 import net.openhft.chronicle.wire.VanillaWireParser;
 import net.openhft.chronicle.wire.WireParser;
 import net.openhft.chronicle.wire.WireType;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -68,6 +70,7 @@ public class EchoTest {
     }
 
     @Test
+    @Ignore("Long running")
     public void perfTestLatency() throws IOException, InterruptedException {
         FXPrice fxPrice = WireType.TEXT.fromString(
                 "!net.openhft.chronicle.websocket.jetty.FXPrice {\n" +
@@ -81,7 +84,7 @@ public class EchoTest {
 
         JettyWebSocketEchoServer server = new JettyWebSocketEchoServer(9090);
         BlockingQueue<FXPrice> q = new LinkedBlockingQueue<>();
-        WireParser parser = new VanillaWireParser((s, v, o) -> q.add(v.object(FXPrice.class)));
+        WireParser<MarshallableOut> parser = new VanillaWireParser<>((s, v, o) -> q.add(v.object(FXPrice.class)));
 
         JettyWebSocketClient client = new JettyWebSocketClient("ws://localhost:9090/echo/", parser);
 
@@ -102,6 +105,7 @@ public class EchoTest {
 
 
     @Test
+    @Ignore("Long running")
     public void perfTestThroughput() throws IOException, InterruptedException {
         FXPrice fxPrice = WireType.TEXT.fromString(
                 "!net.openhft.chronicle.websocket.jetty.FXPrice {\n" +
@@ -115,7 +119,7 @@ public class EchoTest {
 
         JettyWebSocketEchoServer server = new JettyWebSocketEchoServer(9090);
         BlockingQueue<FXPrice> q = new LinkedBlockingQueue<>();
-        WireParser parser = new VanillaWireParser((s, v, o) -> q.add(v.object(FXPrice.class)));
+        WireParser<MarshallableOut> parser = new VanillaWireParser<>((s, v, o) -> q.add(v.object(FXPrice.class)));
 
         JettyWebSocketClient client1 = new JettyWebSocketClient("ws://localhost:9090/echo/", parser);
         JettyWebSocketClient client2 = new JettyWebSocketClient("ws://localhost:9090/echo/", parser);

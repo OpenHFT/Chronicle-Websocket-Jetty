@@ -5,11 +5,14 @@ import net.openhft.chronicle.wire.WireIn;
 import org.eclipse.jetty.websocket.servlet.*;
 
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 
-public class JettyServletFactory extends WebSocketServlet implements WebSocketCreator {
-    private final BiConsumer<WireIn, MarshallableOut> channel;
+public class JettyServletFactory<T> extends WebSocketServlet implements WebSocketCreator {
+    private final Function<MarshallableOut, T> outWrapper;
+    private final BiConsumer<WireIn, T> channel;
 
-    public JettyServletFactory(BiConsumer<WireIn, MarshallableOut> channel) {
+    public JettyServletFactory(Function<MarshallableOut, T> outWrapper, BiConsumer<WireIn, T> channel) {
+        this.outWrapper = outWrapper;
         this.channel = channel;
     }
 
@@ -20,6 +23,6 @@ public class JettyServletFactory extends WebSocketServlet implements WebSocketCr
 
     @Override
     public Object createWebSocket(ServletUpgradeRequest servletUpgradeRequest, ServletUpgradeResponse servletUpgradeResponse) {
-        return new JettyWebSocketAdapter(channel);
+        return new JettyWebSocketAdapter<T>(outWrapper, channel);
     }
 }
