@@ -66,4 +66,42 @@ public class EchoTest {
         client.close();
         server.close();
     }
+
+    @Test
+    public void perfTest() throws IOException, InterruptedException {
+        FXPrice fxPrice = WireType.TEXT.fromString(
+                "!net.openhft.chronicle.websocket.jetty.FXPrice {\n" +
+                        "  bidprice: 1.2345,\n" +
+                        "  offerprice: 1.2354,\n" +
+                        "  pair: EURUSD,\n" +
+                        "  size: 1000000,\n" +
+                        "  level: 1,\n" +
+                        "  exchangeName: RTRS\n" +
+                        "}");
+
+        JettyWebSocketEchoServer server = new JettyWebSocketEchoServer(9090);
+        BlockingQueue<FXPrice> q = new LinkedBlockingQueue<>();
+        WireParser parser = new VanillaWireParser((s, v, o) -> q.add(v.object(FXPrice.class)));
+
+        JettyWebSocketClient client = new JettyWebSocketClient("ws://localhost:9090/echo/", parser);
+
+        int runs = 50000;
+        for (int t = 0; t < 4; t++) {
+            long start = System.currentTimeMillis();
+            int count = 0;
+            for (int i = 0; i < runs; i++) {
+                client.marshallable(w -> w.writeEventName(() -> "price").marshallable(fxPrice));
+                if (q.poll() != null)
+                    count++;
+            }
+            for (; count < runs; count++) {
+                q.take();
+            }
+            long time = System.currentTimeMillis() - start;
+            System.out.printf("RTT took an average of %,d us%n", time * 1000 / runs);
+        }
+
+        client.close();
+        server.close();
+    }
 }
