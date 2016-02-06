@@ -68,7 +68,7 @@ public class EchoTest {
     }
 
     @Test
-    public void perfTest() throws IOException, InterruptedException {
+    public void perfTestLatency() throws IOException, InterruptedException {
         FXPrice fxPrice = WireType.TEXT.fromString(
                 "!net.openhft.chronicle.websocket.jetty.FXPrice {\n" +
                         "  bidprice: 1.2345,\n" +
@@ -88,13 +88,8 @@ public class EchoTest {
         int runs = 50000;
         for (int t = 0; t < 4; t++) {
             long start = System.currentTimeMillis();
-            int count = 0;
             for (int i = 0; i < runs; i++) {
                 client.marshallable(w -> w.writeEventName(() -> "price").marshallable(fxPrice));
-                if (q.poll() != null)
-                    count++;
-            }
-            for (; count < runs; count++) {
                 q.take();
             }
             long time = System.currentTimeMillis() - start;
@@ -102,6 +97,48 @@ public class EchoTest {
         }
 
         client.close();
+        server.close();
+    }
+
+
+    @Test
+    public void perfTestThroughput() throws IOException, InterruptedException {
+        FXPrice fxPrice = WireType.TEXT.fromString(
+                "!net.openhft.chronicle.websocket.jetty.FXPrice {\n" +
+                        "  bidprice: 1.2345,\n" +
+                        "  offerprice: 1.2354,\n" +
+                        "  pair: EURUSD,\n" +
+                        "  size: 1000000,\n" +
+                        "  level: 1,\n" +
+                        "  exchangeName: RTRS\n" +
+                        "}");
+
+        JettyWebSocketEchoServer server = new JettyWebSocketEchoServer(9090);
+        BlockingQueue<FXPrice> q = new LinkedBlockingQueue<>();
+        WireParser parser = new VanillaWireParser((s, v, o) -> q.add(v.object(FXPrice.class)));
+
+        JettyWebSocketClient client1 = new JettyWebSocketClient("ws://localhost:9090/echo/", parser);
+        JettyWebSocketClient client2 = new JettyWebSocketClient("ws://localhost:9090/echo/", parser);
+
+        int runs = 200000;
+        for (int t = 0; t < 4; t++) {
+            long start = System.currentTimeMillis();
+            int count = 0;
+            for (int i = 0; i < runs; i += 2) {
+                client1.marshallable(w -> w.writeEventName(() -> "price").marshallable(fxPrice));
+                client2.marshallable(w -> w.writeEventName(() -> "price").marshallable(fxPrice));
+                while (q.poll() != null)
+                    count++;
+            }
+            for (; count < runs; count++) {
+                q.take();
+            }
+            long time = System.currentTimeMillis() - start;
+            System.out.printf("Throughput of %,d messages/second%n", runs * 1000 / time);
+        }
+
+        client1.close();
+        client2.close();
         server.close();
     }
 }
