@@ -68,9 +68,17 @@ public class JettyWebSocketAdapter<T> extends WebSocketAdapter implements Marsha
     public void send(WireKey key, WriteValue value) {
         Wire wire = getOutWire();
         value.writeValue(wire.write(key));
+        sendWireContents(wire);
+    }
+
+    public void sendWireContents(Wire wire) {
+        String strOut = wire.bytes().toString();
         try {
-            String strOut = wire.bytes().toString();
-            getRemote().sendString(strOut);
+            RemoteEndpoint remote = getRemote();
+            //noinspection SynchronizationOnLocalVariableOrMethodParameter
+            synchronized (remote) {
+                remote.sendString(strOut);
+            }
             if (OUT.isDebugEnabled())
                 OUT.debug("message out - " + strOut);
 
@@ -83,10 +91,6 @@ public class JettyWebSocketAdapter<T> extends WebSocketAdapter implements Marsha
     public <T> void marshallable(T t, BiConsumer<ValueOut, T> writer) {
         Wire wire = getOutWire();
         writer.accept(wire.getValueOut(), t);
-        try {
-            getRemote().sendString(wire.bytes().toString());
-        } catch (IOException e) {
-            throw new IORuntimeException(e);
-        }
+        sendWireContents(wire);
     }
 }
