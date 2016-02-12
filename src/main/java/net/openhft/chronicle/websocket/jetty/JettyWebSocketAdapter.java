@@ -3,6 +3,7 @@ package net.openhft.chronicle.websocket.jetty;
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.core.io.IORuntimeException;
 import net.openhft.chronicle.wire.*;
+import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 import org.slf4j.Logger;
@@ -52,6 +53,14 @@ public class JettyWebSocketAdapter<T> extends WebSocketAdapter implements Marsha
         Wire wire = outWireTL.get();
         wire.clear();
         return wire;
+    }
+
+    @Override
+    public RemoteEndpoint getRemote() {
+        RemoteEndpoint remote = super.getRemote();
+        if (remote == null)
+            throw new IORuntimeException("Not connected");
+        return remote;
     }
 
     @Override
