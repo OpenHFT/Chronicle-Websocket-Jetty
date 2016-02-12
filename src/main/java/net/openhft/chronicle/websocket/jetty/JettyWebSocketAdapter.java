@@ -5,6 +5,8 @@ import net.openhft.chronicle.core.io.IORuntimeException;
 import net.openhft.chronicle.wire.*;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.function.BiConsumer;
@@ -14,6 +16,8 @@ import java.util.function.Function;
  * Created by peter.lawrey on 06/02/2016.
  */
 public class JettyWebSocketAdapter<T> extends WebSocketAdapter implements MarshallableOut {
+    private static final Logger IN = LoggerFactory.getLogger(JettyWebSocketAdapter.class.getName() + ".IN");
+    private static final Logger OUT = LoggerFactory.getLogger(JettyWebSocketAdapter.class.getName() + ".OUT");
     final ThreadLocal<Wire> inWireTL = ThreadLocal.withInitial(() -> new JSONWire(Bytes.allocateElasticDirect()));
     final ThreadLocal<Wire> outWireTL = ThreadLocal.withInitial(() -> new JSONWire(Bytes.allocateElasticDirect()));
     private final T wrapper;
@@ -37,6 +41,8 @@ public class JettyWebSocketAdapter<T> extends WebSocketAdapter implements Marsha
 
     @Override
     public void onWebSocketText(String message) {
+        if (IN.isDebugEnabled())
+            IN.debug("message in - " + message);
         Wire wire = getInWire();
         wire.bytes().append8bit(message);
         channel.accept(wire, wrapper);
@@ -53,7 +59,11 @@ public class JettyWebSocketAdapter<T> extends WebSocketAdapter implements Marsha
         Wire wire = getOutWire();
         value.writeValue(wire.write(key));
         try {
-            getRemote().sendString(wire.bytes().toString());
+            String strOut = wire.bytes().toString();
+            getRemote().sendString(strOut);
+            if (OUT.isDebugEnabled())
+                OUT.debug("message out - " + strOut);
+
         } catch (IOException e) {
             throw new IORuntimeException(e);
         }
