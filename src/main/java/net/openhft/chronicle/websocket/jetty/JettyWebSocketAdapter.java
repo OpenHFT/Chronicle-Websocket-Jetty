@@ -6,6 +6,7 @@ import net.openhft.chronicle.wire.*;
 import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
+import org.eclipse.jetty.websocket.api.WebSocketException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +57,7 @@ public class JettyWebSocketAdapter<T> extends WebSocketAdapter implements Marsha
     }
 
     @Override
-    public RemoteEndpoint getRemote() {
+    public RemoteEndpoint getRemote() throws WebSocketException {
         RemoteEndpoint remote = super.getRemote();
         if (remote == null)
             throw new IORuntimeException("Not connected");
@@ -73,7 +74,7 @@ public class JettyWebSocketAdapter<T> extends WebSocketAdapter implements Marsha
             if (OUT.isDebugEnabled())
                 OUT.debug("message out - " + strOut);
 
-        } catch (IOException e) {
+        } catch (WebSocketException | IOException e) {
             throw new IORuntimeException(e);
         }
     }
