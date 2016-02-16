@@ -20,7 +20,7 @@ import static org.junit.Assert.assertEquals;
 public class EchoTest {
     @Test
     public void testEcho() throws IOException, InterruptedException {
-        JettyWebSocketEchoServer server = new JettyWebSocketEchoServer(9090);
+        JettyWebSocketEchoServer server = new JettyWebSocketEchoServer(9091);
         BlockingQueue<String> q = new LinkedBlockingQueue<>();
         WireParser parser = new VanillaWireParser((s, v, o) -> q.add(s + " - " + v.text()));
 
@@ -55,7 +55,7 @@ public class EchoTest {
                         "  exchangeName: RTRS\n" +
                         "}");
 
-        JettyWebSocketEchoServer server = new JettyWebSocketEchoServer(9090);
+        JettyWebSocketEchoServer server = new JettyWebSocketEchoServer(9092);
         BlockingQueue<FXPrice> q = new LinkedBlockingQueue<>();
         WireParser parser = new VanillaWireParser((s, v, o) -> q.add(v.object(FXPrice.class)));
 
