@@ -107,7 +107,7 @@
                     </checkinComment>
                     <content>${project.reporting.outputDirectory}</content>
                     <skipDeletedFiles>true</skipDeletedFiles>
-                    <pubScmUrl>scm:git:git@github.com:OpenHFT/${project.description}</pubScmUrl>
+                    <pubScmUrl>scm:git:git@github.com:OpenHFT/Chronicle-Websocket-Jetty</pubScmUrl>
                     <scmBranch>gh-pages</scmBranch>
                 </configuration>
             </plugin>
@@ -117,7 +117,7 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
                     <links>
-                        <link>http://openhft.github.io/${project.description}/apidocs/</link>
+                        <link>http://openhft.github.io/Chronicle-Websocket-Jetty/apidocs/</link>
                     </links>
                 </configuration>
             </plugin>
@@ -183,9 +183,9 @@
     </build>
 
     <scm>
-        <url>scm:git:git@github.com:OpenHFT/${project.description}.git</url>
-        <connection>scm:git:git@github.com:OpenHFT/${project.description}.git</connection>
-        <developerConnection>scm:git:git@github.com:OpenHFT/${project.description}.git</developerConnection>
+        <url>scm:git:git@github.com:OpenHFT/Chronicle-Websocket-Jetty.git</url>
+        <connection>scm:git:git@github.com:OpenHFT/Chronicle-Websocket-Jetty.git</connection>
+        <developerConnection>scm:git:git@github.com:OpenHFT/Chronicle-Websocket-Jetty.git</developerConnection>
         <tag>master</tag>
     </scm>
 
