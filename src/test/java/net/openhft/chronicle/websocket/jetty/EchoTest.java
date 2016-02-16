@@ -20,11 +20,11 @@ import static org.junit.Assert.assertEquals;
 public class EchoTest {
     @Test
     public void testEcho() throws IOException, InterruptedException {
-        JettyWebSocketEchoServer server = new JettyWebSocketEchoServer(9090);
+        JettyWebSocketEchoServer server = new JettyWebSocketEchoServer(19091);
         BlockingQueue<String> q = new LinkedBlockingQueue<>();
         WireParser parser = new VanillaWireParser((s, v, o) -> q.add(s + " - " + v.text()));
 
-        JettyWebSocketClient client = new JettyWebSocketClient("ws://localhost:9090/echo/", parser);
+        JettyWebSocketClient client = new JettyWebSocketClient("ws://localhost:19091/echo/", parser);
         client.marshallable(w -> w.writeEventName(() -> "echo").text("Hello World"));
         client.marshallable(w -> w.writeEventName(() -> "echo2").text("Hello World2"));
 
@@ -55,11 +55,11 @@ public class EchoTest {
                         "  exchangeName: RTRS\n" +
                         "}");
 
-        JettyWebSocketEchoServer server = new JettyWebSocketEchoServer(9090);
+        JettyWebSocketEchoServer server = new JettyWebSocketEchoServer(19092);
         BlockingQueue<FXPrice> q = new LinkedBlockingQueue<>();
         WireParser parser = new VanillaWireParser((s, v, o) -> q.add(v.object(FXPrice.class)));
 
-        JettyWebSocketClient client = new JettyWebSocketClient("ws://localhost:9090/echo/", parser);
+        JettyWebSocketClient client = new JettyWebSocketClient("ws://localhost:19092/echo/", parser);
         client.marshallable(w -> w.writeEventName(() -> "price").marshallable(fxPrice1));
         client.marshallable(w -> w.writeEventName(() -> "price").marshallable(fxPrice2));
 
