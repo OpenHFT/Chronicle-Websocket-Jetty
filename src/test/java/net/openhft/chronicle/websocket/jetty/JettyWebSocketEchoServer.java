@@ -20,8 +20,7 @@ public class JettyWebSocketEchoServer implements BiConsumer<WireIn, Marshallable
 
     @Override
     public void accept(WireIn wireIn, MarshallableOut marshallableOut) {
-        marshallableOut.marshallable(wireIn, (out, in) -> {
-//            in.copyTo(out.wireOut());
+        marshallableOut.writeDocument(wireIn, (out, in) -> {
             out.wireOut().bytes().write(in.bytes());
         });
     }
