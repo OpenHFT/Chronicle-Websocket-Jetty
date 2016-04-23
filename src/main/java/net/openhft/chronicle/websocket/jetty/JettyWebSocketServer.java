@@ -44,6 +44,11 @@ public class JettyWebSocketServer {
         context.addServlet(holderEvents, path);
     }
 
+    public <S, R> void addService(String path, Class<R> responseClass, Function<R, S> serviceFactory) {
+        ServletHolder holderEvents = new ServletHolder("ws-events", new JettyServiceFactory<R, S>(responseClass, serviceFactory));
+        context.addServlet(holderEvents, path);
+    }
+
     public void start() {
         try {
             server.start();

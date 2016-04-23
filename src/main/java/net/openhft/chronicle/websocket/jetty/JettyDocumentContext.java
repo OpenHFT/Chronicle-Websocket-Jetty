@@ -41,7 +41,7 @@ public class JettyDocumentContext implements DocumentContext {
 
     @Override
     public boolean isPresent() {
-        return false;
+        return wire.hasMore();
     }
 
     @Override
