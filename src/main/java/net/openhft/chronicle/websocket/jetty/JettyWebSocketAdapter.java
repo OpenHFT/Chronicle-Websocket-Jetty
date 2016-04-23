@@ -92,4 +92,9 @@ public class JettyWebSocketAdapter<T> extends WebSocketAdapter implements Marsha
             throw new IORuntimeException(e);
         }
     }
+
+    @Override
+    public void close() {
+        // TODO
+    }
 }
