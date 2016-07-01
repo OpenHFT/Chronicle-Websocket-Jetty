@@ -91,9 +91,4 @@ public class JettyWebSocketServiceAdapter<R, S> extends WebSocketAdapter impleme
             throw new IORuntimeException(e);
         }
     }
-
-    @Override
-    public void close() {
-        // TODO
-    }
 }
