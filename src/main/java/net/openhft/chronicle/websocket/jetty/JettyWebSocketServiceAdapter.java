@@ -1,6 +1,5 @@
 package net.openhft.chronicle.websocket.jetty;
 
-import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.core.io.IORuntimeException;
 import net.openhft.chronicle.wire.*;
 import org.eclipse.jetty.websocket.api.RemoteEndpoint;
@@ -11,34 +10,28 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 /**
  * Created by peter.lawrey on 06/02/2016.
  */
-public class JettyWebSocketAdapter<T> extends WebSocketAdapter implements MarshallableOut {
-    private static final Logger IN = LoggerFactory.getLogger(JettyWebSocketAdapter.class.getName() + ".IN");
-    private static final Logger OUT = LoggerFactory.getLogger(JettyWebSocketAdapter.class.getName() + ".OUT");
-    final ThreadLocal<Wire> inWireTL = ThreadLocal.withInitial(() -> new JSONWire(Bytes.allocateElasticDirect()));
+public class JettyWebSocketServiceAdapter<R, S> extends WebSocketAdapter implements MarshallableIn, MarshallableOut {
+    private static final Logger IN = LoggerFactory.getLogger(JettyWebSocketServiceAdapter.class.getName() + ".IN");
+    private static final Logger OUT = LoggerFactory.getLogger(JettyWebSocketServiceAdapter.class.getName() + ".OUT");
+    final ThreadLocal<JettyDocumentContext> readingDocumentTL = ThreadLocal.withInitial(() -> new JettyDocumentContext(0, w -> {
+    }));
     final ThreadLocal<JettyDocumentContext> writingDocumentTL = ThreadLocal.withInitial(() -> new JettyDocumentContext(0, this::sendWireContents));
-    private final T wrapper;
-    private final BiConsumer<WireIn, T> channel;
-    private final int sourceId;
+    private final MethodReader reader;
 
-    public JettyWebSocketAdapter(Function<MarshallableOut, T> outWrapper, BiConsumer<WireIn, T> channel) {
-        this(outWrapper, channel, 0);
-    }
-
-    public JettyWebSocketAdapter(Function<MarshallableOut, T> outWrapper, BiConsumer<WireIn, T> channel, int sourceId) {
-        this.sourceId = sourceId;
-        this.channel = channel;
-        this.wrapper = outWrapper.apply(this);
+    public JettyWebSocketServiceAdapter(Class<R> responseClass, Function<R, S> serviceFactory) {
+        R writer = methodWriter(responseClass);
+        S service = serviceFactory.apply(writer);
+        reader = this.methodReader(service);
     }
 
     @Override
     public boolean recordHistory() {
-        return sourceId != 0;
+        return false;
     }
 
     @Override
@@ -47,7 +40,7 @@ public class JettyWebSocketAdapter<T> extends WebSocketAdapter implements Marsha
     }
 
     public Wire getInWire() {
-        Wire wire = inWireTL.get();
+        Wire wire = readingDocumentTL.get().wire();
         wire.clear();
         return wire;
     }
@@ -58,7 +51,8 @@ public class JettyWebSocketAdapter<T> extends WebSocketAdapter implements Marsha
             IN.debug("message in - " + message);
         Wire wire = getInWire();
         wire.bytes().append8bit(message);
-        channel.accept(wire, wrapper);
+        while (reader.readOne()) {
+        }
     }
 
     @Override
@@ -67,6 +61,11 @@ public class JettyWebSocketAdapter<T> extends WebSocketAdapter implements Marsha
         if (remote == null)
             throw new IORuntimeException("Not connected");
         return remote;
+    }
+
+    @Override
+    public DocumentContext readingDocument() {
+        return readingDocumentTL.get();
     }
 
     @Override

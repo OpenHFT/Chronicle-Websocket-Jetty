@@ -19,9 +19,11 @@ public class JettyWebSocketServer {
     private final Server server;
     private final ServletContextHandler context;
 
-    public JettyWebSocketServer(int port) {
+    public JettyWebSocketServer(String host, int port) {
         server = new Server();
         ServerConnector connector = new ServerConnector(server);
+        if (host != null)
+            connector.setHost(host);
         connector.setPort(port);
         server.addConnector(connector);
 
@@ -30,12 +32,20 @@ public class JettyWebSocketServer {
         context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.setContextPath("/");
         server.setHandler(context);
+    }
 
+    public JettyWebSocketServer(int port) {
+        this(null, port);
     }
 
     public <T> void addServlet(String path, Function<MarshallableOut, T> outWrapper, BiConsumer<WireIn, T> channel) {
         // Add a websocket to a specific path spec
         ServletHolder holderEvents = new ServletHolder("ws-events", new JettyServletFactory<T>(outWrapper, channel));
+        context.addServlet(holderEvents, path);
+    }
+
+    public <S, R> void addService(String path, Class<R> responseClass, Function<R, S> serviceFactory) {
+        ServletHolder holderEvents = new ServletHolder("ws-events", new JettyServiceFactory<R, S>(responseClass, serviceFactory));
         context.addServlet(holderEvents, path);
     }
 

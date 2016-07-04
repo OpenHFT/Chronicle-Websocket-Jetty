@@ -25,8 +25,8 @@ public class EchoTest {
         WireParser parser = new VanillaWireParser((s, v, o) -> q.add(s + " - " + v.text()));
 
         JettyWebSocketClient client = new JettyWebSocketClient("ws://localhost:19091/echo/", parser);
-        client.marshallable(w -> w.writeEventName(() -> "echo").text("Hello World"));
-        client.marshallable(w -> w.writeEventName(() -> "echo2").text("Hello World2"));
+        client.writeDocument(w -> w.writeEventName(() -> "echo").text("Hello World"));
+        client.writeDocument(w -> w.writeEventName(() -> "echo2").text("Hello World2"));
 
         assertEquals("echo - Hello World", q.poll(1, TimeUnit.SECONDS));
         assertEquals("echo2 - Hello World2", q.poll(1, TimeUnit.SECONDS));
@@ -60,8 +60,8 @@ public class EchoTest {
         WireParser parser = new VanillaWireParser((s, v, o) -> q.add(v.object(FXPrice.class)));
 
         JettyWebSocketClient client = new JettyWebSocketClient("ws://localhost:19092/echo/", parser);
-        client.marshallable(w -> w.writeEventName(() -> "price").marshallable(fxPrice1));
-        client.marshallable(w -> w.writeEventName(() -> "price").marshallable(fxPrice2));
+        client.writeDocument(w -> w.writeEventName(() -> "price").marshallable(fxPrice1));
+        client.writeDocument(w -> w.writeEventName(() -> "price").marshallable(fxPrice2));
 
         assertEquals(fxPrice1, q.poll(1, TimeUnit.MINUTES));
         assertEquals(fxPrice2, q.poll(1, TimeUnit.MINUTES));
@@ -92,7 +92,7 @@ public class EchoTest {
         for (int t = 0; t < 4; t++) {
             long start = System.currentTimeMillis();
             for (int i = 0; i < runs; i++) {
-                client.marshallable(w -> w.writeEventName(() -> "price").marshallable(fxPrice));
+                client.writeDocument(w -> w.writeEventName(() -> "price").marshallable(fxPrice));
                 q.take();
             }
             long time = System.currentTimeMillis() - start;
@@ -129,8 +129,8 @@ public class EchoTest {
             long start = System.currentTimeMillis();
             int count = 0;
             for (int i = 0; i < runs; i += 2) {
-                client1.marshallable(w -> w.writeEventName(() -> "price").marshallable(fxPrice));
-                client2.marshallable(w -> w.writeEventName(() -> "price").marshallable(fxPrice));
+                client1.writeDocument(w -> w.writeEventName(() -> "price").marshallable(fxPrice));
+                client2.writeDocument(w -> w.writeEventName(() -> "price").marshallable(fxPrice));
                 while (q.poll() != null)
                     count++;
             }

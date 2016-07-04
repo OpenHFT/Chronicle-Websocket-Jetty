@@ -1,7 +1,9 @@
 package net.openhft.chronicle.websocket.jetty;
 
 import net.openhft.chronicle.core.io.Closeable;
-import net.openhft.chronicle.wire.*;
+import net.openhft.chronicle.wire.DocumentContext;
+import net.openhft.chronicle.wire.MarshallableOut;
+import net.openhft.chronicle.wire.WireIn;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.slf4j.Logger;
@@ -20,8 +22,14 @@ public class JettyWebSocketClient implements MarshallableOut, Closeable {
 
     private final WebSocketClient client;
     private final JettyWebSocketAdapter<MarshallableOut> adapter;
+    private final boolean recordHistory;
 
     public JettyWebSocketClient(String uriString, BiConsumer<WireIn, MarshallableOut> parser) throws IOException {
+        this(uriString, parser, false);
+    }
+
+    public JettyWebSocketClient(String uriString, BiConsumer<WireIn, MarshallableOut> parser, boolean recordHistory) throws IOException {
+        this.recordHistory = recordHistory;
         URI uri = URI.create(uriString);
 
         client = new WebSocketClient();
@@ -41,13 +49,13 @@ public class JettyWebSocketClient implements MarshallableOut, Closeable {
     }
 
     @Override
-    public void send(WireKey key, WriteValue value) {
-        adapter.send(key, value);
+    public DocumentContext writingDocument() {
+        return adapter.writingDocument();
     }
 
     @Override
-    public <T> void marshallable(T t, BiConsumer<ValueOut, T> writer) {
-        adapter.marshallable(t, writer);
+    public boolean recordHistory() {
+        return recordHistory;
     }
 
     @Override
