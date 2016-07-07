@@ -103,7 +103,6 @@ public class EchoTest {
         server.close();
     }
 
-
     @Test
     @Ignore("Long running")
     public void perfTestThroughput() throws IOException, InterruptedException {

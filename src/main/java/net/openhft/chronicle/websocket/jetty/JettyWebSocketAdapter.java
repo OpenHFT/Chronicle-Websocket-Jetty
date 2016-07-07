@@ -76,7 +76,6 @@ public class JettyWebSocketAdapter<T> extends WebSocketAdapter implements Marsha
         return context;
     }
 
-
     public void sendWireContents(Wire wire) {
         String strOut = wire.bytes().toString();
         try {

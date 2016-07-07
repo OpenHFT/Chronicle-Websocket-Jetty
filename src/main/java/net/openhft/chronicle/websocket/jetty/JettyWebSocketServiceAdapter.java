@@ -75,7 +75,6 @@ public class JettyWebSocketServiceAdapter<R, S> extends WebSocketAdapter impleme
         return context;
     }
 
-
     public void sendWireContents(Wire wire) {
         String strOut = wire.bytes().toString();
         try {
