@@ -34,7 +34,6 @@ public class ServiceMain {
     // -XX:+UnlockCommercialFeatures    -XX:+FlightRecorder    -XX:StartFlightRecording=dumponexit=true,filename=ServiceMain.jfr,settings=profile2    -XX:+UnlockDiagnosticVMOptions    -XX:+DebugNonSafepoints
     public static void main(String[] args) throws IOException {
         JLBH jlbh = new JLBH(new JLBHOptions().runs(6)
-                .warmUpIterations(50000)
                 .iterations(50000)
                 .throughput(20000)
                 .accountForCoordinatedOmmission(false)
