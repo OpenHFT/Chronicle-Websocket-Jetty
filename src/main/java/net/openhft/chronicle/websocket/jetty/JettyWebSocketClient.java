@@ -66,7 +66,8 @@ public class JettyWebSocketClient implements MarshallableOut, Closeable {
     }
 
     @Override
-    public DocumentContext writingDocument() {
+    public DocumentContext writingDocument(boolean metaData) {
+        assert !metaData;
         return adapter.writingDocument();
     }
 

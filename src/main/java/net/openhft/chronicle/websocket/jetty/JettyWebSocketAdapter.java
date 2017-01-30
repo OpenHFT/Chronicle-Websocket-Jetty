@@ -87,7 +87,8 @@ public class JettyWebSocketAdapter<T> extends WebSocketAdapter implements Marsha
     }
 
     @Override
-    public DocumentContext writingDocument() {
+    public DocumentContext writingDocument(boolean metaData) {
+        assert !metaData;
         JettyDocumentContext context = writingDocumentTL.get();
         context.reset();
         return context;
