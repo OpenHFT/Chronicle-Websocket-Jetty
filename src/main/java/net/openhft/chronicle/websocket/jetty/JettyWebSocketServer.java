@@ -25,6 +25,7 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
+import javax.servlet.Servlet;
 import java.io.IOException;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -57,12 +58,15 @@ public class JettyWebSocketServer {
 
     public <T> void addServlet(String path, Function<MarshallableOut, T> outWrapper, BiConsumer<WireIn, T> channel) {
         // Add a websocket to a specific path spec
-        ServletHolder holderEvents = new ServletHolder("ws-events", new JettyServletFactory<T>(outWrapper, channel));
-        context.addServlet(holderEvents, path);
+        addServlet(path, new JettyServletFactory<T>(outWrapper, channel));
     }
 
     public <S, R> void addService(String path, Class<R> responseClass, Function<R, S> serviceFactory) {
-        ServletHolder holderEvents = new ServletHolder("ws-events", new JettyServiceFactory<R, S>(responseClass, serviceFactory));
+        addServlet(path, new JettyServiceFactory<R, S>(responseClass, serviceFactory));
+    }
+
+    private void addServlet(String path, Servlet servlet) {
+        ServletHolder holderEvents = new ServletHolder(path, servlet);
         context.addServlet(holderEvents, path);
     }
 
