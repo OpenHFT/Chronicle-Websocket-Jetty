@@ -31,6 +31,7 @@ public class JettyDocumentContext implements DocumentContext {
     private final Wire wire = new JSONWire(Bytes.allocateElasticDirect());
     private final int sourceId;
     private final Consumer<Wire> wireConsumer;
+    private long index = 0;
 
     public JettyDocumentContext(int sourceId, Consumer<Wire> wireConsumer) {
         this.sourceId = sourceId;
@@ -43,7 +44,7 @@ public class JettyDocumentContext implements DocumentContext {
 
     @Override
     public long index() {
-        throw new UnsupportedOperationException();
+        return index;
     }
 
     @Override
@@ -78,5 +79,6 @@ public class JettyDocumentContext implements DocumentContext {
 
     public void close() {
         wireConsumer.accept(wire);
+        index++;
     }
 }
