@@ -30,7 +30,7 @@ import java.io.IOException;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-/**
+/*
  * Created by peter.lawrey on 04/02/2016.
  */
 public class JettyWebSocketServer {

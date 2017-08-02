@@ -23,7 +23,7 @@ import net.openhft.chronicle.wire.WireIn;
 import java.io.IOException;
 import java.util.function.BiConsumer;
 
-/**
+/*
  * Created by peter.lawrey on 06/02/2016.
  */
 public class JettyWebSocketEchoServer implements BiConsumer<WireIn, MarshallableOut> {

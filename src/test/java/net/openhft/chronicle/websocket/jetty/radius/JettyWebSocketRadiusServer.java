@@ -20,7 +20,7 @@ package net.openhft.chronicle.websocket.jetty.radius;
 import net.openhft.chronicle.core.Jvm;
 import net.openhft.chronicle.websocket.jetty.JettyWebSocketServer;
 
-/**
+/*
  * Created by peter.lawrey on 06/02/2016.
  */
 public class JettyWebSocketRadiusServer {

@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 
-/**
+/*
  * Created by peter.lawrey on 06/02/2016.
  */
 public class EchoTest {

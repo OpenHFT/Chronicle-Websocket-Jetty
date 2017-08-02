@@ -25,7 +25,7 @@ import net.openhft.chronicle.wire.WireParser;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
+/*
  * Created by peter on 23/04/16.
  */
 public class ServiceThroughputMain {

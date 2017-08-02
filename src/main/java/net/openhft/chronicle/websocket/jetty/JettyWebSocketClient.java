@@ -31,7 +31,7 @@ import java.net.URI;
 import java.util.concurrent.Future;
 import java.util.function.BiConsumer;
 
-/**
+/*
  * Created by peter.lawrey on 06/02/2016.
  */
 public class JettyWebSocketClient implements MarshallableOut, Closeable {

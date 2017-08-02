@@ -31,7 +31,7 @@ import java.io.IOException;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-/**
+/*
  * Created by peter.lawrey on 06/02/2016.
  */
 public class JettyWebSocketAdapter<T> extends WebSocketAdapter implements MarshallableOut {
