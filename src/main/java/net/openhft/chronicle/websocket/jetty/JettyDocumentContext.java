@@ -77,6 +77,7 @@ public class JettyDocumentContext implements DocumentContext {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void close() {
         wireConsumer.accept(wire);
         index++;

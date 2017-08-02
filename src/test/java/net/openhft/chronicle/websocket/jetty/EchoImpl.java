@@ -27,6 +27,7 @@ public class EchoImpl implements Echo {
         this.echo = echo;
     }
 
+    @Override
     public void echo(long time) {
         echo.echo(time);
     }
