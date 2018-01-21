@@ -17,6 +17,7 @@
 
 package net.openhft.chronicle.websocket.jetty;
 
+@FunctionalInterface
 public interface HelloReplier {
     void reply(String message);
 }

@@ -28,7 +28,7 @@ import net.openhft.chronicle.wire.WireParser;
 import java.io.IOException;
 
 /*
- * Created by peter on 23/04/16.
+ * Created by Peter Lawrey on 23/04/16.
  */
 public class ServiceMain {
     // -XX:+UnlockCommercialFeatures    -XX:+FlightRecorder    -XX:StartFlightRecording=dumponexit=true,filename=ServiceMain.jfr,settings=profile2    -XX:+UnlockDiagnosticVMOptions    -XX:+DebugNonSafepoints

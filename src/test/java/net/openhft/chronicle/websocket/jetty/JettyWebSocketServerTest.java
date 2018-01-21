@@ -1,9 +1,7 @@
 package net.openhft.chronicle.websocket.jetty;
 
-import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.wire.MarshallableOut;
 import net.openhft.chronicle.wire.VanillaWireParser;
-import net.openhft.chronicle.wire.WireIn;
 import net.openhft.chronicle.wire.WireParser;
 import org.junit.Test;
 
@@ -11,8 +9,6 @@ import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
 
 import static org.junit.Assert.assertEquals;
 
@@ -51,6 +47,7 @@ public class JettyWebSocketServerTest {
         server.close();
     }
 
+    @FunctionalInterface
     private interface Service {
         void serve(String request);
     }

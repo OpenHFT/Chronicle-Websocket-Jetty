@@ -22,7 +22,7 @@ import org.eclipse.jetty.websocket.servlet.*;
 import java.util.function.Function;
 
 /*
- * Created by peter on 23/04/16.
+ * Created by Peter Lawrey on 23/04/16.
  */
 public class JettyServiceFactory<R, S> extends WebSocketServlet implements WebSocketCreator {
     private final Class<R> responseClass;

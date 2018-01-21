@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /*
- * Created by peter on 23/04/16.
+ * Created by Peter Lawrey on 23/04/16.
  */
 public class ServiceThroughputMain {
     // -XX:+UnlockCommercialFeatures    -XX:+FlightRecorder    -XX:StartFlightRecording=dumponexit=true,filename=ServiceThroughputMain.jfr,settings=profile2    -XX:+UnlockDiagnosticVMOptions    -XX:+DebugNonSafepoints
