@@ -17,8 +17,12 @@
 
 package net.openhft.chronicle.websocket.jetty;
 
+import net.openhft.chronicle.bytes.MethodReader;
 import net.openhft.chronicle.core.io.IORuntimeException;
-import net.openhft.chronicle.wire.*;
+import net.openhft.chronicle.wire.DocumentContext;
+import net.openhft.chronicle.wire.MarshallableIn;
+import net.openhft.chronicle.wire.MarshallableOut;
+import net.openhft.chronicle.wire.Wire;
 import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
