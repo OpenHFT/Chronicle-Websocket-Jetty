@@ -36,7 +36,7 @@ public class JettyWebSocketRadiusServer {
         new JettyWebSocketRadiusServer(7000);
     }
 
-    static class RadiusPublisher implements IRadiusPublisher{
+    static class RadiusPublisher implements IRadiusPublisher {
         private Radius radius;
 
         RadiusPublisher(Radius radius) {
@@ -47,7 +47,7 @@ public class JettyWebSocketRadiusServer {
         @Override
         public void start(String s) {
             new Thread(() -> {
-                for(int i = 1; i<100; i++) {
+                for (int i = 1; i < 100; i++) {
                     radius.radius(i);
                     System.out.println("Message sent " + i);
                     Jvm.pause(1000);

@@ -18,6 +18,6 @@
 package net.openhft.chronicle.websocket.jetty.radius;
 
 @FunctionalInterface
-interface IRadiusPublisher{
+interface IRadiusPublisher {
     void start(String s);
 }
