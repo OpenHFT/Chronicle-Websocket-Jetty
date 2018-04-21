@@ -40,6 +40,6 @@ public class JettyServletFactory<T> extends WebSocketServlet implements WebSocke
 
     @Override
     public Object createWebSocket(ServletUpgradeRequest servletUpgradeRequest, ServletUpgradeResponse servletUpgradeResponse) {
-        return new JettyWebSocketAdapter<T>(outWrapper, channel);
+        return new JettyWebSocketAdapter<>(outWrapper, channel);
     }
 }

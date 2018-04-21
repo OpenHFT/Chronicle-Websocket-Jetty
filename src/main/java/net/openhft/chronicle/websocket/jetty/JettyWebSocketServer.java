@@ -58,11 +58,11 @@ public class JettyWebSocketServer {
 
     public <T> void addServlet(String path, Function<MarshallableOut, T> outWrapper, BiConsumer<WireIn, T> channel) {
         // Add a websocket to a specific path spec
-        addServlet(path, new JettyServletFactory<T>(outWrapper, channel));
+        addServlet(path, new JettyServletFactory<>(outWrapper, channel));
     }
 
     public <S, R> void addService(String path, Class<R> responseClass, Function<R, S> serviceFactory) {
-        addServlet(path, new JettyServiceFactory<R, S>(responseClass, serviceFactory));
+        addServlet(path, new JettyServiceFactory<>(responseClass, serviceFactory));
     }
 
     private void addServlet(String path, Servlet servlet) {
