@@ -19,11 +19,11 @@ package net.openhft.chronicle.websocket.jetty;
 
 import net.openhft.chronicle.core.Jvm;
 import net.openhft.chronicle.wire.MarshallableOut;
-import net.openhft.chronicle.wire.VanillaWireParser;
-import net.openhft.chronicle.wire.WireParser;
+import net.openhft.chronicle.wire.WireIn;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
 
 /*
  * Created by Peter Lawrey on 23/04/16.
@@ -36,8 +36,10 @@ public class ServiceThroughputMain {
         server.start();
 
         AtomicInteger count = new AtomicInteger();
-        WireParser<MarshallableOut> parser = new VanillaWireParser<>((s, v, o) -> count.incrementAndGet());
-        JettyWebSocketClient client1 = new JettyWebSocketClient("ws://localhost:9090/echo/", parser);
+
+        BiConsumer<WireIn, MarshallableOut> consumer = (wireIn, marshallableOut) -> count.incrementAndGet();
+
+        JettyWebSocketClient client1 = new JettyWebSocketClient("ws://localhost:9090/echo/", consumer);
         int runs = 1000_000;
         long start = System.nanoTime();
         for (int i = 0; i < runs; i++) {

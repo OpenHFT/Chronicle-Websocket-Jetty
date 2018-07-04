@@ -1,8 +1,6 @@
 package net.openhft.chronicle.websocket.jetty;
 
-import net.openhft.chronicle.wire.MarshallableOut;
-import net.openhft.chronicle.wire.VanillaWireParser;
-import net.openhft.chronicle.wire.WireParser;
+import net.openhft.chronicle.wire.FieldNumberParselet;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -10,6 +8,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import static java.util.Objects.requireNonNull;
 import static org.junit.Assert.assertEquals;
 
 public class JettyWebSocketServerTest {
@@ -26,10 +25,15 @@ public class JettyWebSocketServerTest {
         server.addService(bar + "/*", Service.class, Bar::new);
         server.start();
 
+        FieldNumberParselet np = (methodId, wire) -> {
+        };
+
+
         {
             BlockingQueue<CharSequence> q1 = new LinkedBlockingQueue<>();
-            WireParser<MarshallableOut> parser1 = new VanillaWireParser<>((s, v, o) -> q1.add(v.text()));
-            JettyWebSocketClient client1 = new JettyWebSocketClient("ws://localhost:" + port + foo + "/", parser1);
+
+            JettyWebSocketClient client1 = new JettyWebSocketClient("ws://localhost:" + port +
+                    foo + "/", (wireIn, marshallableOut) -> q1.add(requireNonNull(wireIn.read("serve").text())));
             client1.writeDocument(w -> w.writeEventName("serve").text("me"));
             assertEquals(FOO, q1.poll(1, TimeUnit.SECONDS));
             client1.close();
@@ -37,8 +41,9 @@ public class JettyWebSocketServerTest {
 
         {
             BlockingQueue<CharSequence> q2 = new LinkedBlockingQueue<>();
-            WireParser<MarshallableOut> parser2 = new VanillaWireParser<>((s, v, o) -> q2.add(v.text()));
-            JettyWebSocketClient client2 = new JettyWebSocketClient("ws://localhost:" + port + bar + "/", parser2);
+
+            JettyWebSocketClient client2 = new JettyWebSocketClient("ws://localhost:" + port +
+                    bar + "/", (wireIn, marshallableOut) -> q2.add(requireNonNull(wireIn.read("serve").text())));
             client2.writeDocument(w -> w.writeEventName("serve").text("me"));
             assertEquals(BAR, q2.poll(1, TimeUnit.SECONDS));
             client2.close();

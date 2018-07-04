@@ -18,16 +18,18 @@
 package net.openhft.chronicle.websocket.jetty;
 
 import net.openhft.chronicle.wire.MarshallableOut;
-import net.openhft.chronicle.wire.VanillaWireParser;
-import net.openhft.chronicle.wire.WireParser;
+import net.openhft.chronicle.wire.WireIn;
 import net.openhft.chronicle.wire.WireType;
+import net.openhft.chronicle.wire.Wires;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiConsumer;
 
 import static org.junit.Assert.assertEquals;
 
@@ -35,13 +37,15 @@ import static org.junit.Assert.assertEquals;
  * Created by peter.lawrey on 06/02/2016.
  */
 public class EchoTest {
+    BlockingQueue<String> q = new LinkedBlockingQueue<>();
+
     @Test
     public void testEcho() throws IOException, InterruptedException {
         JettyWebSocketEchoServer server = new JettyWebSocketEchoServer(19091);
-        BlockingQueue<String> q = new LinkedBlockingQueue<>();
-        WireParser parser = new VanillaWireParser((s, v, o) -> q.add(s + " - " + v.text()));
 
-        JettyWebSocketClient client = new JettyWebSocketClient("ws://localhost:19091/echo/", parser);
+        BiConsumer<WireIn, MarshallableOut> consumer = this::accept;
+
+        JettyWebSocketClient client = new JettyWebSocketClient("ws://localhost:19091/echo/", consumer);
         client.writeDocument(w -> w.writeEventName(() -> "echo").text("Hello World"));
         client.writeDocument(w -> w.writeEventName(() -> "echo2").text("Hello World2"));
 
@@ -50,6 +54,14 @@ public class EchoTest {
         client.close();
         server.close();
     }
+
+    public void accept(final WireIn wireIn, final MarshallableOut marshallableOut) {
+        StringBuilder key = Wires.acquireStringBuilder();
+        String text = wireIn.read(key).text();
+        String result = key.toString() + " - " + text;
+        q.add(result);
+    }
+
 
     @Test
     public void testEchoMarshallable() throws IOException, InterruptedException {
@@ -74,9 +86,10 @@ public class EchoTest {
 
         JettyWebSocketEchoServer server = new JettyWebSocketEchoServer(19092);
         BlockingQueue<FXPrice> q = new LinkedBlockingQueue<>();
-        WireParser parser = new VanillaWireParser((s, v, o) -> q.add(v.object(FXPrice.class)));
 
-        JettyWebSocketClient client = new JettyWebSocketClient("ws://localhost:19092/echo/", parser);
+        BiConsumer<WireIn, MarshallableOut> consumer = (wireIn, marshallableOut) -> q.add(Objects.requireNonNull(wireIn.read("price").object(FXPrice.class)));
+
+        JettyWebSocketClient client = new JettyWebSocketClient("ws://localhost:19092/echo/", consumer);
         client.writeDocument(w -> w.writeEventName(() -> "price").marshallable(fxPrice1));
         client.writeDocument(w -> w.writeEventName(() -> "price").marshallable(fxPrice2));
 
@@ -101,9 +114,11 @@ public class EchoTest {
 
         JettyWebSocketEchoServer server = new JettyWebSocketEchoServer(9090);
         BlockingQueue<FXPrice> q = new LinkedBlockingQueue<>();
-        WireParser<MarshallableOut> parser = new VanillaWireParser<>((s, v, o) -> q.add(v.object(FXPrice.class)));
 
-        JettyWebSocketClient client = new JettyWebSocketClient("ws://localhost:9090/echo/", parser);
+        BiConsumer<WireIn, MarshallableOut> consumer = (wireIn, marshallableOut)
+                -> q.add(Objects.requireNonNull(wireIn.read("price").object(FXPrice.class)));
+
+        JettyWebSocketClient client = new JettyWebSocketClient("ws://localhost:9090/echo/", consumer);
 
         int runs = 50000;
         for (int t = 0; t < 4; t++) {
@@ -135,10 +150,12 @@ public class EchoTest {
 
         JettyWebSocketEchoServer server = new JettyWebSocketEchoServer(9090);
         BlockingQueue<FXPrice> q = new LinkedBlockingQueue<>();
-        WireParser<MarshallableOut> parser = new VanillaWireParser<>((s, v, o) -> q.add(v.object(FXPrice.class)));
 
-        JettyWebSocketClient client1 = new JettyWebSocketClient("ws://localhost:9090/echo/", parser);
-        JettyWebSocketClient client2 = new JettyWebSocketClient("ws://localhost:9090/echo/", parser);
+        BiConsumer<WireIn, MarshallableOut> consumer = (wireIn, marshallableOut) -> q.add(wireIn.getValueIn()
+                .object(FXPrice.class));
+
+        JettyWebSocketClient client1 = new JettyWebSocketClient("ws://localhost:9090/echo/", consumer);
+        JettyWebSocketClient client2 = new JettyWebSocketClient("ws://localhost:9090/echo/", consumer);
 
         int runs = 200000;
         for (int t = 0; t < 4; t++) {

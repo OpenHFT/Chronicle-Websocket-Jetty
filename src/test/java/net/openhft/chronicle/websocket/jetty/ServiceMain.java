@@ -22,10 +22,10 @@ import net.openhft.chronicle.core.jlbh.JLBHOptions;
 import net.openhft.chronicle.core.jlbh.JLBHTask;
 import net.openhft.chronicle.core.util.NanoSampler;
 import net.openhft.chronicle.wire.MarshallableOut;
-import net.openhft.chronicle.wire.VanillaWireParser;
-import net.openhft.chronicle.wire.WireParser;
+import net.openhft.chronicle.wire.WireIn;
 
 import java.io.IOException;
+import java.util.function.BiConsumer;
 
 /*
  * Created by Peter Lawrey on 23/04/16.
@@ -43,10 +43,14 @@ public class ServiceMain {
 
                     @Override
                     public void init(JLBH jlbh) {
-                        WireParser<MarshallableOut> parser = new VanillaWireParser<>((s, v, o) ->
-                                jlbh.sampleNanos(System.nanoTime() - v.int64()));
+
                         try {
-                            client1 = new JettyWebSocketClient("ws://localhost:9090/echo/", parser);
+
+                            BiConsumer<WireIn, MarshallableOut> consumer = (wireIn,
+                                                                            marshallableOut) ->
+                                    jlbh.sampleNanos(System.nanoTime() - wireIn.getValueIn().int64());
+
+                            client1 = new JettyWebSocketClient("ws://localhost:9090/echo/", consumer);
                         } catch (IOException e) {
                             throw new AssertionError(e);
                         }
