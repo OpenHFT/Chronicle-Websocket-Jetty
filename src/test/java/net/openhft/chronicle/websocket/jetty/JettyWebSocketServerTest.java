@@ -28,7 +28,6 @@ public class JettyWebSocketServerTest {
         FieldNumberParselet np = (methodId, wire) -> {
         };
 
-
         {
             BlockingQueue<CharSequence> q1 = new LinkedBlockingQueue<>();
 

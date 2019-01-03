@@ -62,7 +62,6 @@ public class EchoTest {
         q.add(result);
     }
 
-
     @Test
     public void testEchoMarshallable() throws IOException, InterruptedException {
         FXPrice fxPrice1 = WireType.TEXT.fromString(
