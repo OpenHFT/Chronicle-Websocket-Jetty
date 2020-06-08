@@ -17,7 +17,7 @@
 
 package net.openhft.chronicle.websocket.jetty;
 
-import net.openhft.chronicle.core.io.Closeable;
+import net.openhft.chronicle.core.io.SimpleCloseable;
 import net.openhft.chronicle.wire.DocumentContext;
 import net.openhft.chronicle.wire.MarshallableOut;
 import net.openhft.chronicle.wire.WireIn;
@@ -34,7 +34,7 @@ import java.util.function.BiConsumer;
 /*
  * Created by peter.lawrey on 06/02/2016.
  */
-public class JettyWebSocketClient implements MarshallableOut, Closeable {
+public class JettyWebSocketClient extends SimpleCloseable implements MarshallableOut {
     private static final Logger LOGGER = LoggerFactory.getLogger(JettyWebSocketClient.class);
 
     private final WebSocketClient client;
@@ -60,6 +60,10 @@ public class JettyWebSocketClient implements MarshallableOut, Closeable {
             // Wait for Connect
             Session session = fut.get();
             adapter.onWebSocketConnect(session);
+
+        } catch (IOException ioe) {
+            throw ioe;
+
         } catch (Exception e) {
             throw new IOException(e);
         }
@@ -77,7 +81,7 @@ public class JettyWebSocketClient implements MarshallableOut, Closeable {
     }
 
     @Override
-    public void close() {
+    protected void performClose() {
         try {
             client.stop();
         } catch (Exception e) {
