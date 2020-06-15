@@ -39,7 +39,6 @@ public class JettyDocumentContext implements DocumentContext {
     }
 
     public void reset() {
-        throwExceptionIfClosed();
         wire.clear();
     }
 
@@ -60,7 +59,6 @@ public class JettyDocumentContext implements DocumentContext {
 
     @Override
     public boolean isPresent() {
-        throwExceptionIfClosed();
         return wire.hasMore();
     }
 
@@ -71,7 +69,6 @@ public class JettyDocumentContext implements DocumentContext {
 
     @Override
     public int sourceId() {
-        throwExceptionIfClosed();
         return sourceId;
     }
 
