@@ -71,12 +71,14 @@ public class JettyWebSocketClient extends SimpleCloseable implements Marshallabl
 
     @Override
     public DocumentContext writingDocument(boolean metaData) {
+        throwExceptionIfClosed();
         assert !metaData;
         return adapter.writingDocument();
     }
 
     @Override
     public boolean recordHistory() {
+        throwExceptionIfClosed();
         return recordHistory;
     }
 
