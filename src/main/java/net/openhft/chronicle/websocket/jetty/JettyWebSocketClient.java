@@ -79,8 +79,6 @@ public class JettyWebSocketClient extends SimpleCloseable implements Marshallabl
 
     @Override
     public boolean recordHistory() {
-        throwExceptionIfClosed();
-
         return recordHistory;
     }
 
