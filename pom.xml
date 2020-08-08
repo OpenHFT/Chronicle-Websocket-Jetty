@@ -28,7 +28,7 @@
     </parent>
 
     <artifactId>chronicle-websocket-jetty</artifactId>
-    <version>1.19.31-SNAPSHOT</version>
+    <version>1.20.1-SNAPSHOT</version>
     <name>OpenHFT/Chronicle-Websocket-Jetty</name>
     <description>Chronicle-Websocket-Jetty</description>
     <packaging>bundle</packaging>
