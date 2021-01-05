@@ -19,10 +19,7 @@ package net.openhft.chronicle.websocket.jetty;
 
 import net.openhft.chronicle.bytes.MethodReader;
 import net.openhft.chronicle.core.io.IORuntimeException;
-import net.openhft.chronicle.wire.DocumentContext;
-import net.openhft.chronicle.wire.MarshallableIn;
-import net.openhft.chronicle.wire.MarshallableOut;
-import net.openhft.chronicle.wire.Wire;
+import net.openhft.chronicle.wire.*;
 import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
@@ -95,6 +92,11 @@ public class JettyWebSocketServiceAdapter<R, S> extends WebSocketAdapter impleme
         JettyDocumentContext context = writingDocumentTL.get();
         context.reset();
         return context;
+    }
+
+    @Override
+    public DocumentContext acquireWritingDocument(boolean metaData) throws UnrecoverableTimeoutException {
+        return writingDocument(metaData);
     }
 
     public void sendWireContents(Wire wire) {

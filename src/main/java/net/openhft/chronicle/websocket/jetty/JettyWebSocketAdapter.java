@@ -37,6 +37,7 @@ import java.util.function.Function;
 public class JettyWebSocketAdapter<T> extends WebSocketAdapter implements MarshallableOut {
     private static final Logger IN = LoggerFactory.getLogger(JettyWebSocketAdapter.class.getName() + ".IN");
     private static final Logger OUT = LoggerFactory.getLogger(JettyWebSocketAdapter.class.getName() + ".OUT");
+    // TODO: close/release thread locals
     final ThreadLocal<Wire> inWireTL = ThreadLocal.withInitial(() -> new JSONWire(Bytes.allocateElasticDirect()));
     final ThreadLocal<JettyDocumentContext> writingDocumentTL = ThreadLocal.withInitial(() -> new JettyDocumentContext(0, this::sendWireContents));
     private final T wrapper;
@@ -92,6 +93,11 @@ public class JettyWebSocketAdapter<T> extends WebSocketAdapter implements Marsha
         JettyDocumentContext context = writingDocumentTL.get();
         context.reset();
         return context;
+    }
+
+    @Override
+    public DocumentContext acquireWritingDocument(boolean metaData) throws UnrecoverableTimeoutException {
+        return writingDocument(metaData);
     }
 
     public void sendWireContents(Wire wire) {

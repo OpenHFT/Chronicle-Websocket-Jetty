@@ -52,7 +52,7 @@ public class JettyWebSocketServerTest {
     }
 
     @FunctionalInterface
-    private interface Service {
+    public interface Service {
         void serve(String request);
     }
 

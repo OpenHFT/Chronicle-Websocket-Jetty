@@ -20,6 +20,7 @@ package net.openhft.chronicle.websocket.jetty;
 import net.openhft.chronicle.core.io.SimpleCloseable;
 import net.openhft.chronicle.wire.DocumentContext;
 import net.openhft.chronicle.wire.MarshallableOut;
+import net.openhft.chronicle.wire.UnrecoverableTimeoutException;
 import net.openhft.chronicle.wire.WireIn;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
@@ -75,6 +76,11 @@ public class JettyWebSocketClient extends SimpleCloseable implements Marshallabl
 
         assert !metaData;
         return adapter.writingDocument();
+    }
+
+    @Override
+    public DocumentContext acquireWritingDocument(boolean metaData) throws UnrecoverableTimeoutException {
+        return writingDocument(metaData);
     }
 
     @Override

@@ -53,11 +53,6 @@ public class JettyDocumentContext implements DocumentContext {
     }
 
     @Override
-    public void metaData(boolean metaData) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public boolean isPresent() {
         return wire.hasMore();
     }
