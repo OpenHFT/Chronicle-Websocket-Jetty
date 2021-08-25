@@ -17,10 +17,10 @@
 
 package net.openhft.chronicle.websocket.jetty;
 
-import net.openhft.chronicle.core.jlbh.JLBH;
-import net.openhft.chronicle.core.jlbh.JLBHOptions;
-import net.openhft.chronicle.core.jlbh.JLBHTask;
 import net.openhft.chronicle.core.util.NanoSampler;
+import net.openhft.chronicle.jlbh.JLBH;
+import net.openhft.chronicle.jlbh.JLBHOptions;
+import net.openhft.chronicle.jlbh.JLBHTask;
 import net.openhft.chronicle.wire.MarshallableOut;
 import net.openhft.chronicle.wire.WireIn;
 
@@ -36,7 +36,7 @@ public class ServiceMain {
         JLBH jlbh = new JLBH(new JLBHOptions().runs(6)
                 .iterations(50000)
                 .throughput(20000)
-                .accountForCoordinatedOmmission(false)
+                //.accountForCoordinatedOmmission(false)
                 .recordOSJitter(false)
                 .jlbhTask(new JLBHTask() {
                     JettyWebSocketClient client1;
