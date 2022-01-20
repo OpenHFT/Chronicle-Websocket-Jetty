@@ -21,13 +21,14 @@ import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.wire.DocumentContext;
 import net.openhft.chronicle.wire.JSONWire;
 import net.openhft.chronicle.wire.Wire;
+import net.openhft.chronicle.wire.WriteDocumentContext;
 
 import java.util.function.Consumer;
 
 /*
  * Created by Peter Lawrey on 22/04/16.
  */
-public class JettyDocumentContext implements DocumentContext {
+public class JettyDocumentContext implements WriteDocumentContext {
     private final Wire wire = new JSONWire(Bytes.allocateElasticDirect());
     private final int sourceId;
     private final Consumer<Wire> wireConsumer;
@@ -76,5 +77,20 @@ public class JettyDocumentContext implements DocumentContext {
     public void close() {
         wireConsumer.accept(wire);
         index++;
+    }
+
+    @Override
+    public void start(boolean metaData) {
+        // No-op.
+    }
+
+    @Override
+    public boolean chainedElement() {
+        return false;
+    }
+
+    @Override
+    public void chainedElement(boolean chainedElement) {
+        // No-op.
     }
 }
